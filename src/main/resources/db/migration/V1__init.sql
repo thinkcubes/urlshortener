@@ -1,0 +1,9 @@
+CREATE TABLE urlmap (
+    idx INT(11) NOT NULL,
+    url VARCHAR(1000) NOT NULL,
+    hash_value VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (idx),
+    UNIQUE INDEX idx_hash(hash_value)
+);
