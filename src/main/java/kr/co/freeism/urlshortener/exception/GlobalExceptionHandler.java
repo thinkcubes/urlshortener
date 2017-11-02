@@ -1,14 +1,13 @@
 package kr.co.freeism.urlshortener.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.validation.ConstraintViolationException;
 
 /**
  * @author Martin
@@ -18,10 +17,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 @Controller
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(value = RuntimeException.class)
-    public ResponseEntity handlePaymentException(WebRequest request, Exception ex) {
-        log.error(ex.getMessage(), ex);
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ModelAndView handle(ConstraintViolationException ex) {
+        log.warn("ConstraintViolationException", ex);
 
-        return super.handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return new ModelAndView("error");
+    }
+
+    @ExceptionHandler(value = RuntimeException.class)
+    public ModelAndView handle(RuntimeException ex) {
+        log.error("RuntimeException : message = {}", ex.getMessage(), ex);
+
+        return new ModelAndView("error");
     }
 }

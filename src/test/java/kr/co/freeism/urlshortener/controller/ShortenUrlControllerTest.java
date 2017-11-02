@@ -8,13 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.object.IsCompatibleType.typeCompatibleWith;
-import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -74,6 +71,14 @@ public class ShortenUrlControllerTest {
     }
 
     @Test
+    public void formWithInvalidParams() throws Exception {
+        mockMvc.perform(
+            get("/").param("url", "foofoourl"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("error"));
+    }
+
+    @Test
     public void redirect() throws Exception {
         givenUrlMapAtDb();
 
@@ -85,12 +90,10 @@ public class ShortenUrlControllerTest {
 
     @Test
     public void redirectIfHashValueNotExisted() throws Exception {
-        MvcResult result = mockMvc.perform(
+        mockMvc.perform(
             get("/" + HASH_VALUE))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-
-        assertThat(result.getResolvedException().getClass(), typeCompatibleWith(RuntimeException.class));
+            .andExpect(status().isOk())
+            .andExpect(view().name("error"));
     }
 
     private void givenUrlMapAtDb() {
